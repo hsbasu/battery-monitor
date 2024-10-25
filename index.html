@@ -50,8 +50,8 @@
   <a class="badges" href="#download-latest-version">
     <img src="https://img.shields.io/github/downloads/mamolinux/battery-monitor/total?label=Downloads" alt="Downloads">
   </a>
-  <a class="badges" href="https://github.com/mamolinux/battery-monitor/releases/download/1.1.3/battery-monitor_1.1.3_all.deb">
-    <img src="https://img.shields.io/github/downloads/mamolinux/battery-monitor/1.1.3/battery-monitor_1.1.3_all.deb?label=Downloads%40Latest%20Binary" alt="GitHub release (latest by date and asset">
+  <a class="badges" href="https://github.com/mamolinux/battery-monitor/releases/download/1.1.4/battery-monitor_1.1.4_all.deb">
+    <img src="https://img.shields.io/github/downloads/mamolinux/battery-monitor/1.1.4/battery-monitor_1.1.4_all.deb?label=Downloads%40Latest%20Binary" alt="GitHub release (latest by date and asset">
   </a>
 </p>
 
@@ -97,7 +97,7 @@ Get the debian package archive from GitHub. For installation, check [here](#inst
   <a class="buttn" href="https://github.com/mamolinux/battery-monitor" target="_blank"><i class="fa-brands fa-github"></i> View On GitHub</a>
   <a class="buttn" href="https://github.com/mamolinux/battery-monitor/zipball/master"><i class="fa-solid fa-file-zipper"></i> Download Source (.zip)</a>
   <a class="buttn" href="https://github.com/mamolinux/battery-monitor/tarball/master"><i class="fa-solid fa-file-zipper"></i> Download Source (.tar.gz)</a>
-  <a class="buttn" href="https://github.com/mamolinux/battery-monitor/releases/download/1.1.3/battery-monitor_1.1.3_all.deb"><i class="fa-brands fa-debian"></i> Download Binary (.deb)</a>
+  <a class="buttn" href="https://github.com/mamolinux/battery-monitor/releases/download/1.1.4/battery-monitor_1.1.4_all.deb"><i class="fa-brands fa-debian"></i> Download Binary (.deb)</a>
 </p>
 
 ## Features and Screenshots
@@ -170,9 +170,13 @@ In Settings menu, you can configure and adjust settings for Battery Monitor. Her
 ### Build Dependencies
 The following dependencies are required to build **Battery Monitor**.
 ```$
+desktop-file-utils
 gettext
+libglib2.0-bin
+libgtk-4-bin
+meson
+pybuild-plugin-pyproject
 python3
-python3-setuptools
 python3-sphinx
 python3-sphinx-argparse
 ```
@@ -205,9 +209,20 @@ Remove `apt install` in the command given in [Debian/Ubuntu based distros](#debi
 
 **Note**: There might be cases where one or more dependencies might not be available for your system. But that is highly unlikely. In such situations, please [create an issue](#issue-tracking-and-contributing).
 
-## Build and Install the Latest Version
+## Installation
+There are two ways, this app can be installed on a Debian/Ubuntu based system.
 
-### Debian/Ubuntu based systems
+### 1. Download and install binary files
+Download the latest binary .deb files from [here](https://github.com/mamolinux/battery-monitor/releases/latest). Then install the GUI Frontend from terminal as
+```$
+sudo dpkg -i battery-monitor*.deb
+sudo apt install -f
+```
+
+### 2. Build and Install From Source
+If you are having trouble installing the pre-built binary, build them from source.
+
+#### Debian/Ubuntu based systems
 There are two methods, this app can be installed/used on a Debian/Ubuntu based system. First, download and unzip the source package using:
 ```
 wget https://github.com/mamolinux/battery-monitor/archive/refs/heads/master.zip
@@ -215,15 +230,28 @@ unzip master.zip
 cd battery-monitor-master
 ```
 
-1. **Option 1:** Manually copying necessary files to root (`/`). For that, follow the steps below:
-	1. Install python package using `pip3`:
+1. **Option 1:** Manually copying necessary files. For that, follow the steps below:
+	1. Install python package sources using `meson`:
 		```
-		sudo pip3 install .
+		rm -rf builddir
+		meson setup -Dprefix=$HOME/.local builddir
+		meson compile -C builddir --verbose
+		meson install -C builddir
 		```
-		It will install all files under `/usr/local/`
-	2. Compile `schemas` using:
+		It will install all files under `/home/<yourusername>/.local`. To **remove** the locally (`/home/<yourusername>/.local`) installed files, run:
 		```
-		sudo glib-compile-schemas /usr/local/share/glib-2.0/schemas
+		ninja uninstall -C builddir
+		```
+	2. To manually install for all users:
+		```
+		rm -rf builddir
+		meson setup builddir
+		meson compile -C builddir --verbose
+		sudo meson install -C builddir
+		```
+		The last step requires **Administrative Privilege**. So, be careful before using this. To **remove** the installed files, run:
+		```
+		sudo ninja uninstall -C builddir
 		```
 
 2. **Option 2:** Build a debian package and install it. To build a debian package on your own:
@@ -259,7 +287,7 @@ If you are interested to contribute and enrich the code, you are most welcome. Y
 **NB:** Using the issue template or PR template is **not** mandatory.
 
 ### For Developers
-If you want to test **Battery Monitor**,
+I am managing these apps all by myself during my free time. There are times when I can't contribute for months. So a little help is always welcome. If you want to test **Battery Monitor**,
 1. Get the source package and unzip it using:
 	```
 	wget https://github.com/mamolinux/battery-monitor/archive/refs/heads/master.zip
